@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import Layout from "@/components/shared/Layout.vue";
+import Layout from "../../components/shared/Layout.vue";
 import Button from "primevue/button";
 
 const router = useRouter();

@@ -13,7 +13,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 
 public class AuthController {
 
@@ -28,6 +27,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginUser) {
+        System.out.println(loginUser.getEmail());
+        System.out.println(loginUser.getPassword());
         return userService.findByEmail(loginUser.getEmail())
                 .filter(user -> passwordEncoder.matches(loginUser.getPassword(), user.getPassword()))
                 .map(user -> {

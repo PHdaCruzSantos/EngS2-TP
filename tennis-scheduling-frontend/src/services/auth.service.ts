@@ -1,3 +1,5 @@
+import api from "../config/api.config"; // Importa a instância do axios configurada
+
 export interface LoginResponse {
   token: string;
   user: any;
@@ -12,57 +14,31 @@ export interface RegisterData {
 export const authService = {
   async login(email: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        mode: "no-cors",
-        credentials: "include",
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Login failed");
+      const response = await api.post("/api/auth/login", { email, password }); // Certifique-se de que a URL está correta
+      if (response.data.token) {
+        localStorage.setItem("user", JSON.stringify(response.data));
       }
-
-      const data = await response.json();
-      if (data.token) {
-        localStorage.setItem("user", JSON.stringify(data));
-      }
-      return data;
+      return response.data;
     } catch (error) {
-      throw error;
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      throw new Error("Login failed: " + errorMessage);
     }
   },
 
   async register(data: RegisterData): Promise<any> {
     try {
-      const response = await fetch("http://localhost:8080/api/users/register", {
-        // Changed endpoint
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        credentials: "include",
-        mode: "no-cors", // Changed from no-cors to cors
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Registration failed");
-      }
-
-      return await response.json();
+      const response = await api.post("/api/users/register", data); // Já está correto
+      return response.data;
     } catch (error) {
-      throw error;
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      throw new Error("Registration failed: " + errorMessage);
     }
   },
 
   logout(): void {
-    localStorage.removeItem("user");
+    localStorage.removeItem("user"); // Remove o usuário do localStorage
   },
 
   getCurrentUser(): any {
@@ -72,6 +48,6 @@ export const authService = {
   },
 
   isAuthenticated(): boolean {
-    return !!this.getCurrentUser()?.token;
+    return !!this.getCurrentUser()?.token; // Verifica se o usuário está autenticado
   },
 };

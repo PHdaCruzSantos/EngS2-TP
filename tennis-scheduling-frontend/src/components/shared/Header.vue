@@ -1,19 +1,19 @@
 <template>
-  <Menubar class="bg-tennis-dark border-none">
+  <Menubar class="bg-tennis-dark border-none rounded-none">
     <template #start>
       <div class="flex items-center">
         <Button
           v-if="authStore.isAuthenticated"
           icon="pi pi-bars"
           @click="toggleSidebar"
-          class="p-button-text p-button-rounded text-white lg:hidden"
+          class="p-button-text p-button-rounded text-white"
         />
         <h1 class="text-xl font-semibold text-white ml-3">Tennis Scheduling</h1>
       </div>
     </template>
 
+    <!-- Menu para usuário não autenticado -->
     <template #end>
-      <!-- Menu para usuário não autenticado -->
       <div v-if="!authStore.isAuthenticated" class="flex items-center gap-4">
         <Button
           label="Login"
@@ -31,21 +31,26 @@
 
       <!-- Menu para usuário autenticado -->
       <div v-else class="flex items-center gap-4">
+        <!-- Btn toggle menu -->
+
+        <div
+          class="flex items-center mr-2 cursor-pointer hover:opacity-80 transition-opacity"
+          @click="toggleMenu"
+        >
+          <Avatar
+            :label="userInitials"
+            class="mr-2 bg-tennis-light text-tennis-dark"
+            shape="circle"
+          />
+          <span class="text-white hidden md:inline">
+            {{ authStore.userName }}
+          </span>
+          <i class="pi pi-chevron-down text-white ml-2"></i>
+        </div>
         <Menu ref="menu" :model="menuItems" :popup="true">
-          <template #trigger="{ toggle }">
-            <div class="flex items-center cursor-pointer" @click="toggle">
-              <Avatar
-                :label="userInitials"
-                class="mr-2 bg-tennis-light text-tennis-dark"
-                shape="circle"
-              />
-              <span class="text-white hidden md:inline">{{
-                authStore.user?.name
-              }}</span>
-              <i class="pi pi-chevron-down text-white ml-2"></i>
-            </div>
-          </template>
+          <template #target> </template>
         </Menu>
+
         <Badge
           v-if="unreadNotifications"
           :value="unreadNotifications"
@@ -59,9 +64,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/auth.store";
+import { useAuthStore } from "../../stores/auth.store";
 import Menubar from "primevue/menubar";
 import Menu from "primevue/menu";
 import Avatar from "primevue/avatar";
@@ -74,20 +79,37 @@ const menu = ref();
 
 const emit = defineEmits(["toggle-sidebar"]);
 
-const toggleSidebar = () => {
-  emit("toggle-sidebar");
-};
+// Debug para verificar o estado de autenticação
+onMounted(() => {
+  console.log("Header mounted - Auth state:", authStore.isAuthenticated);
+  console.log("Header mounted - User:", authStore.user);
+});
+
+// Watch para monitorar mudanças no estado de autenticação
+watch(
+  () => authStore.isAuthenticated,
+  (newValue) => {
+    console.log("Auth state changed:", newValue);
+  }
+);
 
 const userInitials = computed(() => {
-  const name = authStore.user?.name || "";
+  const name = authStore.userName || "";
+  if (!name) return "U";
   return name
     .split(" ")
-    .map((word) => word[0])
+    .map((word: string) => word[0])
     .join("")
     .toUpperCase();
 });
 
-const unreadNotifications = ref(0);
+const toggleSidebar = () => {
+  emit("toggle-sidebar");
+};
+
+const toggleMenu = (event: Event) => {
+  menu.value?.toggle(event);
+};
 
 const menuItems = [
   {
@@ -107,6 +129,8 @@ const menuItems = [
     },
   },
 ];
+
+const unreadNotifications = ref(0);
 </script>
 
 <style scoped>
@@ -120,5 +144,9 @@ const menuItems = [
 
 :deep(.p-button.p-button-outlined:hover) {
   @apply bg-white border-white text-tennis-dark;
+}
+
+:deep(.p-menu-overlay) {
+  @apply mt-2;
 }
 </style>

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "@/stores/auth.store";
+import { useAuthStore } from "../stores/auth.store";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -7,13 +7,13 @@ const router = createRouter({
     {
       path: "/login",
       name: "login",
-      component: () => import("@/views/auth/LoginView.vue"),
+      component: () => import("../views/auth/LoginView.vue"),
       meta: { requiresAuth: false },
     },
     {
       path: "/register",
       name: "register",
-      component: () => import("@/views/auth/RegisterView.vue"),
+      component: () => import("../views/auth/RegisterView.vue"),
       meta: { requiresAuth: false },
     },
     {
@@ -23,21 +23,21 @@ const router = createRouter({
     {
       path: "/matches",
       name: "matches",
-      component: () => import("@/views/matches/MatchesView.vue"),
-      meta: { requiresAuth: true },
+      component: () => import("../views/matches/MatchesView.vue"),
+      meta: { requiresAuth: false },
     },
-    {
-      path: "/profile",
-      name: "profile",
-      // component: () => import("@/views/profile/ProfileView.vue"),
-      meta: { requiresAuth: true },
-    },
-    {
-      path: "/notifications",
-      name: "notifications",
-      // component: () => import("@/views/notifications/NotificationsView.vue"),
-      meta: { requiresAuth: true },
-    },
+    // {
+    //   path: "/profile",
+    //   name: "profile",
+    //   // component: () => import("@/views/profile/ProfileView.vue"),
+    //   meta: { requiresAuth: true },
+    // },
+    // {
+    //   path: "/notifications",
+    //   name: "notifications",
+    //   // component: () => import("@/views/notifications/NotificationsView.vue"),
+    //   meta: { requiresAuth: true },
+    // },
   ],
 });
 
@@ -47,7 +47,7 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
 
   if (requiresAuth && !authStore.isAuthenticated) {
-    next("/login");
+    next("/");
   } else {
     next();
   }

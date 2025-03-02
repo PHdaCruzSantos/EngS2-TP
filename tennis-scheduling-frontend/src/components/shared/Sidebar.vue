@@ -1,27 +1,24 @@
 <template>
-  <Sidebar
-    v-model="sidebarVisible"
-    :modal="false"
-    :dismissable="false"
-    :showCloseIcon="false"
-    class="w-64 fixed left-0 top-0 h-full bg-white"
+  <aside
+    v-show="sidebarVisible"
+    class="fixed top-[64px] left-0 h-[calc(100vh-64px)] w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-20"
+    :class="{
+      '-translate-x-full': !sidebarVisible,
+      'translate-x-0': sidebarVisible,
+    }"
   >
-    <template #header>
-      <div class="p-4 bg-tennis-dark text-white rounded">
-        <h2 class="text-lg font-semibold">Menu</h2>
-      </div>
-    </template>
-
+    <div class="p-4 bg-tennis-green text-white">
+      <h2 class="text-lg font-semibold">Menu</h2>
+    </div>
     <div class="p-4">
       <PanelMenu :model="menuItems" class="border-none" />
     </div>
-  </Sidebar>
+  </aside>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import Sidebar from "primevue/sidebar";
 import PanelMenu from "primevue/panelmenu";
 
 const route = useRoute();
@@ -37,13 +34,24 @@ const sidebarVisible = computed({
   get: () => props.modelValue,
   set: (value) => emit("update:modelValue", value),
 });
+console.log("Sidebar visibility changed:", sidebarVisible.value);
+
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    sidebarVisible.value = newValue;
+  }
+);
 
 const menuItems = [
   {
     label: "Dashboard",
     icon: "pi pi-home",
     command: () => router.push("/matches"),
-    class: route.path === "/matches" ? "bg-tennis-light text-tennis-dark" : "",
+    class:
+      route.path === "/matches"
+        ? "bg-tennis-dark text-tennis-dark border-spacing-1"
+        : "",
   },
   {
     label: "Minhas Partidas",
@@ -71,22 +79,18 @@ const menuItems = [
     icon: "pi pi-bell",
     command: () => router.push("/notifications"),
     class:
-      route.path === "/notifications" ? "bg-tennis-light text-tennis-dark" : "",
+      route.path === "/notifications" ? "bg-tennis-dark text-tennis-dark" : "",
   },
   {
     label: "Perfil",
     icon: "pi pi-user",
     command: () => router.push("/profile"),
-    class: route.path === "/profile" ? "bg-tennis-light text-tennis-dark" : "",
+    class: route.path === "/profile" ? "bg-tennis-dark text-tennis-dark" : "",
   },
 ];
 </script>
 
-<style scoped>
-:deep(.p-sidebar) {
-  @apply shadow-lg;
-}
-
+<style scoped lang="postcss">
 :deep(.p-panelmenu .p-panelmenu-header-link) {
   @apply p-3;
 }
