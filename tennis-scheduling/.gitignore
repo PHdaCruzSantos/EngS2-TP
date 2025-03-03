@@ -34,4 +34,4 @@ build/
 .env
 *.local.properties
 application-local.yml
-tennis-scheduling/src/main/resources/application.yml
+src/main/resources/application.yml

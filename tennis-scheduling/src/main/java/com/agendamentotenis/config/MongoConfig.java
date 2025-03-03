@@ -1,34 +1,41 @@
 package com.agendamentotenis.config;
 
+import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
-@EnableMongoRepositories(basePackages = "com.agendamentotenis.repository")
+@EnableMongoRepositories(basePackages = "com.agendamentotenis")
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
-  @Value("${spring.data.mongodb.uri}")
-  private String connectionString;
-
-  @Value("${spring.data.mongodb.database}")
-  private String databaseName;
+  private final Dotenv dotenv = Dotenv.configure().load();
 
   @Override
   protected String getDatabaseName() {
-    return databaseName;
+    return dotenv.get("MONGODB_DATABASE");
   }
 
   @Override
   public MongoClient mongoClient() {
-    return MongoClients.create(connectionString);
+    String username = dotenv.get("MONGODB_USERNAME");
+    String password = dotenv.get("MONGODB_PASSWORD");
+    String cluster = dotenv.get("MONGODB_CLUSTER");
+    String uri = String.format("mongodb+srv://%s:%s@%s/?retryWrites=true&w=majority",
+        username, password, cluster);
+    return MongoClients.create(uri);
   }
 
-  @Override
-  protected boolean autoIndexCreation() {
-    return true;
+  @Bean
+  MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
+    return new MongoTransactionManager(dbFactory);
   }
 }

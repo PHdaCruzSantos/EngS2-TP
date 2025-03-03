@@ -1,8 +1,8 @@
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://pedrohcs1:vKQRgFHl4pVYjUqF@tennisshedule.my5rl.mongodb.net/
-      database: tennis_scheduling
+      uri: mongodb+srv://#{environment.MONGODB_USERNAME}:#{environment.MONGODB_PASSWORD}@#{environment.MONGODB_CLUSTER}
+      database: #{environment.MONGODB_DATABASE}
       authentication-database: admin
       auto-index-creation: true
   mvc:
