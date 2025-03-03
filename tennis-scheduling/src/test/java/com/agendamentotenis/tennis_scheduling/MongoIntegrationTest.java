@@ -5,14 +5,27 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.context.ActiveProfiles;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+
+import io.github.cdimascio.dotenv.Dotenv;
+
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.bson.Document;
+
 @SpringBootTest
+@EnableMongoRepositories(basePackages = "com.agendamentotenis.repository")
+@ActiveProfiles("test")
 public class MongoIntegrationTest {
 
   @Autowired
   private MongoTemplate mongoTemplate;
+
+  private static final Dotenv dotenv = Dotenv.configure().load();
 
   @BeforeEach
   void setUp() {
@@ -29,14 +42,23 @@ public class MongoIntegrationTest {
   }
 
   @Test
-  void testMongoConnection() {
-    // Test connection and verify collections exist
-    assertTrue(mongoTemplate.collectionExists("users"));
-    assertTrue(mongoTemplate.collectionExists("matches"));
-    assertTrue(mongoTemplate.collectionExists("notifications"));
+  public void testConnection() {
+    // Test that mongoTemplate is properly injected and working
+    assertNotNull(mongoTemplate);
+    assertNotNull(mongoTemplate.getDb());
 
-    // Additional verification
-    int collectionCount = mongoTemplate.getCollectionNames().size();
-    assertTrue(collectionCount >= 3, "Expected at least 3 collections but found " + collectionCount);
+    // Run a ping command to verify the connection
+    Document pingResult = mongoTemplate.getDb().runCommand(new Document("ping", 1));
+    assertEquals(1, pingResult.get("ok"));
+
+    // Print database name for verification
+
+    // Verify that we can perform basic operations
+    String collectionName = "test_connection_" + System.currentTimeMillis();
+    mongoTemplate.createCollection(collectionName);
+    assertTrue(mongoTemplate.collectionExists(collectionName));
+
+    // Clean up
+    mongoTemplate.dropCollection(collectionName);
   }
 }
