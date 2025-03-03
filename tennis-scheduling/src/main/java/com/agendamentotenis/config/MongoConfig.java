@@ -31,6 +31,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     String cluster = dotenv.get("MONGODB_CLUSTER");
     String uri = String.format("mongodb+srv://%s:%s@%s/?retryWrites=true&w=majority",
         username, password, cluster);
+
     return MongoClients.create(uri);
   }
 
