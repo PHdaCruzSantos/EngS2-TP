@@ -25,7 +25,6 @@ export const authService = {
       throw new Error("Login failed: " + errorMessage);
     }
   },
-
   async register(data: RegisterData): Promise<any> {
     try {
       const response = await api.post("/api/users/register", data); // Já está correto

@@ -43,7 +43,6 @@ const sidebarVisible = ref(true);
 // Inicializar o store ao montar o componente
 onMounted(() => {
   // Inicializar o store para carregar os dados do localStorage
-  authStore.init();
   console.log("Layout mounted - Auth state:", authStore.isAuthenticated);
   console.log("Layout mounted - User:", authStore.user);
 });

@@ -31,8 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
-<<<<<<< HEAD
 .env
 
-=======
->>>>>>> parent of ba5bbda (build: environment variables and configs)
