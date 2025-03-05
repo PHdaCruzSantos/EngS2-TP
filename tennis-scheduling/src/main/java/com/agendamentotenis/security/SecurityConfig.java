@@ -27,10 +27,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorizeConfig -> authorizeConfig
-                        .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(authorizeConfig -> {
+                    authorizeConfig.requestMatchers(HttpMethod.POST, "/api/users/register").permitAll();
+                    authorizeConfig.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
+                    authorizeConfig.anyRequest().authenticated(); // Todas as outras rotas exigem autenticação
+                })
                 .csrf(AbstractHttpConfigurer::disable) // Desabilita CSRF para APIs stateless
                 .cors(Customizer.withDefaults()); // Habilita CORS
 

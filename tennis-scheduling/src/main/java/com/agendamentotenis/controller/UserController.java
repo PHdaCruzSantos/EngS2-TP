@@ -23,7 +23,6 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        System.out.println("Recebida requisição para registrar usuário: " + user);
         User createdUser = userService.createUser(user);
 
         // Gera o token JWT para o usuário recém-criado

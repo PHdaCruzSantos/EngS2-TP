@@ -5,6 +5,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+
   withCredentials: true, // Permite o envio de cookies (se necessário)
 });
 
@@ -27,7 +28,7 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       // Token expirado ou inválido
       localStorage.removeItem("user"); // Remove o usuário do localStorage
-      window.location.href = "/login"; // Redireciona para a página de login
+      window.location.href = "/"; // Redireciona para a página de login
     }
     return Promise.reject(error);
   }

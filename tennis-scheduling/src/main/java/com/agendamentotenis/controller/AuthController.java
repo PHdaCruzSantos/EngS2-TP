@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-
+@CrossOrigin(origins = "http://localhost:5173") // Permite requisições do frontend
 public class AuthController {
 
     @Autowired
@@ -27,8 +27,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginUser) {
-        System.out.println(loginUser.getEmail());
-        System.out.println(loginUser.getPassword());
         return userService.findByEmail(loginUser.getEmail())
                 .filter(user -> passwordEncoder.matches(loginUser.getPassword(), user.getPassword()))
                 .map(user -> {
