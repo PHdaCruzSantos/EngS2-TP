@@ -117,7 +117,7 @@
             </div>
           </TabPanel>
 
-          <TabPanel header="Histórico">
+          <TabPanel header="Agendadas">
             <div v-if="pastMatches.length === 0" class="text-center py-6">
               <p class="text-gray-600">
                 Não há partidas anteriores registradas.
