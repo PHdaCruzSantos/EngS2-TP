@@ -26,6 +26,12 @@ const router = createRouter({
       component: () => import("../views/matches/MatchesView.vue"),
       meta: { requiresAuth: false },
     },
+    {
+      path: "/matches/new",
+      name: "new-match",
+      component: () => import("../views/matches/NewMatchView.vue"),
+      meta: { requiresAuth: true },
+    },
     // {
     //   path: "/profile",
     //   name: "profile",

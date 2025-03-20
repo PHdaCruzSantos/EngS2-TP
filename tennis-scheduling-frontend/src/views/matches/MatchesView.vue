@@ -10,7 +10,7 @@
           @click="router.push('/matches/new')"
         />
       </div>
-      <!-- Conteúdo da página será adicionado aqui -->
+      <UserMatches />
     </div>
   </Layout>
 </template>
@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import Layout from "../../components/shared/Layout.vue";
+import UserMatches from "../../components/matches/UserMatches.vue";
 import Button from "primevue/button";
 
 const router = useRouter();
