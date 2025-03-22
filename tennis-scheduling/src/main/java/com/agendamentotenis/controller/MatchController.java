@@ -57,6 +57,22 @@ public class MatchController {
     return ResponseEntity.ok(matchService.updateMatchStatus(id, status));
   }
 
+  // Novo endpoint para confirmar participação de um jogador específico
+  @PutMapping("/{id}/confirm/{playerId}")
+  public ResponseEntity<Match> confirmPlayerParticipation(
+      @PathVariable String id,
+      @PathVariable String playerId) {
+    return ResponseEntity.ok(matchService.confirmPlayerParticipation(id, playerId));
+  }
+
+  // Novo endpoint para cancelar confirmação de um jogador específico
+  @PutMapping("/{id}/unconfirm/{playerId}")
+  public ResponseEntity<Match> unconfirmPlayerParticipation(
+      @PathVariable String id,
+      @PathVariable String playerId) {
+    return ResponseEntity.ok(matchService.unconfirmPlayerParticipation(id, playerId));
+  }
+
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteMatch(@PathVariable String id) {
     matchService.deleteMatch(id);

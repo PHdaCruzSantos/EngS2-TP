@@ -8,6 +8,7 @@ interface MatchData {
   endTime: Date;
   status?: string;
 }
+
 class MatchService {
   async createMatch(matchData: MatchData): Promise<any> {
     const formattedMatch = {
@@ -38,6 +39,14 @@ class MatchService {
 
   async updateMatchStatus(id: string, status: string) {
     return api.put(`api/matches/${id}/status`, status);
+  }
+
+  async confirmParticipation(matchId: string, playerId: string) {
+    return api.put(`api/matches/${matchId}/confirm/${playerId}`);
+  }
+
+  async unconfirmParticipation(matchId: string, playerId: string) {
+    return api.put(`api/matches/${matchId}/unconfirm/${playerId}`);
   }
 
   async deleteMatch(id: string) {
