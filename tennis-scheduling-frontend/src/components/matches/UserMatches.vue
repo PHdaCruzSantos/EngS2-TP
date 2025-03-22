@@ -61,6 +61,15 @@
                         <i class="pi" :class="getStatusIcon(match.status)"></i>
                         {{ formatStatus(match.status) }}
                       </span>
+                      <span
+                        v-if="match.status === 'SCHEDULED'"
+                        class="text-xs text-gray-500 ml-2"
+                      >
+                        ({{ getConfirmationCount(match) }}/{{
+                          match.players.length
+                        }}
+                        confirmações)
+                      </span>
                     </div>
                   </div>
                   <div class="match-players">
@@ -69,9 +78,22 @@
                         <Avatar
                           :label="getPlayerInitials(getCurrentUser())"
                           shape="circle"
-                          class="bg-tennis-green text-white"
+                          :class="
+                            isPlayerConfirmed(match, getCurrentUser().id)
+                              ? 'bg-tennis-green text-white'
+                              : 'bg-gray-400 text-white'
+                          "
                         />
                         <span class="text-xs mt-1">Você</span>
+                        <span
+                          v-if="isPlayerConfirmed(match, getCurrentUser().id)"
+                          class="text-xs text-green-600"
+                        >
+                          <i class="pi pi-check"></i> Confirmado
+                        </span>
+                        <span v-else class="text-xs text-yellow-600">
+                          <i class="pi pi-clock"></i> Pendente
+                        </span>
                       </div>
                       <span class="text-xl px-2 font-bold text-gray-400"
                         >vs</span
@@ -80,11 +102,24 @@
                         <Avatar
                           :label="getPlayerInitials(getOpponent(match))"
                           shape="circle"
-                          class="bg-tennis-dark text-white"
+                          :class="
+                            isPlayerConfirmed(match, getOpponent(match).id)
+                              ? 'bg-tennis-green text-white'
+                              : 'bg-gray-400 text-white'
+                          "
                         />
                         <span class="text-xs mt-1">{{
                           getOpponent(match).name || "Adversário"
                         }}</span>
+                        <span
+                          v-if="isPlayerConfirmed(match, getOpponent(match).id)"
+                          class="text-xs text-green-600"
+                        >
+                          <i class="pi pi-check"></i> Confirmado
+                        </span>
+                        <span v-else class="text-xs text-yellow-600">
+                          <i class="pi pi-clock"></i> Pendente
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -92,16 +127,29 @@
 
                 <div class="match-actions mt-4 flex justify-end gap-2">
                   <Button
-                    v-if="match.status === 'SCHEDULED'"
+                    v-if="
+                      match.status === 'SCHEDULED' &&
+                      !isPlayerConfirmed(match, getCurrentUser().id)
+                    "
                     icon="pi pi-check"
                     label="Confirmar"
                     class="p-button-success p-button-sm"
-                    @click="updateMatchStatus(match.id, 'CONFIRMED')"
+                    @click="confirmParticipation(match.id)"
+                  />
+                  <Button
+                    v-if="
+                      match.status === 'SCHEDULED' &&
+                      isPlayerConfirmed(match, getCurrentUser().id)
+                    "
+                    icon="pi pi-times"
+                    label="Cancelar Confirmação"
+                    class="p-button-warning p-button-sm"
+                    @click="unconfirmParticipation(match.id)"
                   />
                   <Button
                     v-if="['SCHEDULED', 'CONFIRMED'].includes(match.status)"
                     icon="pi pi-times"
-                    label="Cancelar"
+                    label="Cancelar Partida"
                     class="p-button-danger p-button-sm"
                     @click="updateMatchStatus(match.id, 'CANCELLED')"
                   />
@@ -117,7 +165,7 @@
             </div>
           </TabPanel>
 
-          <TabPanel header="Agendadas">
+          <TabPanel header="Anteriores">
             <div v-if="pastMatches.length === 0" class="text-center py-6">
               <p class="text-gray-600">
                 Não há partidas anteriores registradas.
@@ -154,7 +202,11 @@
                         <Avatar
                           :label="getPlayerInitials(getCurrentUser())"
                           shape="circle"
-                          class="bg-gray-400 text-white"
+                          :class="
+                            isPlayerConfirmed(match, getCurrentUser().id)
+                              ? 'bg-green-400 text-white'
+                              : 'bg-gray-400 text-white'
+                          "
                         />
                         <span class="text-xs mt-1 text-gray-600">Você</span>
                       </div>
@@ -163,7 +215,11 @@
                         <Avatar
                           :label="getPlayerInitials(getOpponent(match))"
                           shape="circle"
-                          class="bg-gray-500 text-white"
+                          :class="
+                            isPlayerConfirmed(match, getOpponent(match).id)
+                              ? 'bg-green-400 text-white'
+                              : 'bg-gray-400 text-white'
+                          "
                         />
                         <span class="text-xs mt-1 text-gray-600">{{
                           getOpponent(match).name || "Adversário"
@@ -265,6 +321,72 @@ export default {
       }
     };
 
+    // Verifica se um jogador confirmou a partida
+    const isPlayerConfirmed = (match, playerId) => {
+      return (
+        match.confirmedPlayerIds && match.confirmedPlayerIds.includes(playerId)
+      );
+    };
+
+    // Obter contagem de confirmações
+    const getConfirmationCount = (match) => {
+      return match.confirmedPlayerIds ? match.confirmedPlayerIds.length : 0;
+    };
+
+    // Confirmar participação
+    const confirmParticipation = async (matchId) => {
+      try {
+        const userId = currentUser.value?.id;
+        if (!userId) {
+          throw new Error("Usuário não identificado");
+        }
+
+        await matchService.confirmParticipation(matchId, userId);
+        toast.add({
+          severity: "success",
+          summary: "Sucesso",
+          detail: "Você confirmou sua participação na partida",
+          life: 3000,
+        });
+        loadMatches(); // Reload matches after update
+      } catch (error) {
+        console.error("Error confirming participation:", error);
+        toast.add({
+          severity: "error",
+          summary: "Erro",
+          detail: "Falha ao confirmar participação",
+          life: 3000,
+        });
+      }
+    };
+
+    // Cancelar confirmação
+    const unconfirmParticipation = async (matchId) => {
+      try {
+        const userId = currentUser.value?.id;
+        if (!userId) {
+          throw new Error("Usuário não identificado");
+        }
+
+        await matchService.unconfirmParticipation(matchId, userId);
+        toast.add({
+          severity: "success",
+          summary: "Sucesso",
+          detail: "Você cancelou sua confirmação para esta partida",
+          life: 3000,
+        });
+        loadMatches(); // Reload matches after update
+      } catch (error) {
+        console.error("Error unconfirming participation:", error);
+        toast.add({
+          severity: "error",
+          summary: "Erro",
+          detail: "Falha ao cancelar confirmação",
+          life: 3000,
+        });
+      }
+    };
+
     // Update match status
     const updateMatchStatus = async (matchId, newStatus) => {
       try {
@@ -302,13 +424,13 @@ export default {
 
     const formatTime = (timeString) => {
       if (!timeString) return "";
-      // For simplicity, assume time is in format "HH:MM:SS"
-      return timeString.substring(0, 5);
+      return timeString.substring(0, 5); // Format HH:mm
     };
 
     const formatStatus = (status) => {
+      if (!status) return "";
       const statusMap = {
-        SCHEDULED: "Agendada - aguardando confirmação",
+        SCHEDULED: "Agendada",
         CONFIRMED: "Confirmada",
         CANCELLED: "Cancelada",
         COMPLETED: "Concluída",
@@ -317,37 +439,39 @@ export default {
     };
 
     const getStatusColor = (status) => {
+      if (!status) return "";
       const colorMap = {
         SCHEDULED: "text-yellow-600",
         CONFIRMED: "text-green-600",
         CANCELLED: "text-red-600",
         COMPLETED: "text-blue-600",
       };
-      return colorMap[status] || "text-gray-600";
+      return colorMap[status] || "";
     };
 
     const getStatusIcon = (status) => {
+      if (!status) return "";
       const iconMap = {
         SCHEDULED: "pi-clock",
         CONFIRMED: "pi-check-circle",
         CANCELLED: "pi-times-circle",
         COMPLETED: "pi-flag",
       };
-      return iconMap[status] || "pi-circle";
+      return iconMap[status] || "";
     };
 
     const getCurrentUser = () => {
-      return currentUser.value || { name: "Você" };
+      return currentUser.value || { id: "", name: "Você" };
     };
 
     const getOpponent = (match) => {
-      if (!match.players || match.players.length === 0) {
-        return { name: "Adversário" };
+      if (!match.players || match.players.length < 2) {
+        return { id: "", name: "Adversário" };
       }
-
-      const currentUserId = currentUser.value?.id;
+      const userId = currentUser.value?.id;
       return (
-        match.players.find((player) => player.id !== currentUserId) || {
+        match.players.find((player) => player.id !== userId) || {
+          id: "",
           name: "Adversário",
         }
       );
@@ -357,7 +481,7 @@ export default {
       if (!player || !player.name) return "?";
       return player.name
         .split(" ")
-        .map((name) => name.charAt(0))
+        .map((n) => n[0])
         .join("")
         .toUpperCase()
         .substring(0, 2);
@@ -365,30 +489,33 @@ export default {
 
     const isToday = (dateString) => {
       if (!dateString) return false;
-      const matchDate = new Date(dateString);
+      const date = new Date(dateString);
       const today = new Date();
       return (
-        matchDate.getDate() === today.getDate() &&
-        matchDate.getMonth() === today.getMonth() &&
-        matchDate.getFullYear() === today.getFullYear()
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()
       );
     };
 
     const navigateToNewMatch = () => {
-      router.push("/matches/new");
+      router.push("/agendamento");
     };
 
-    // Load matches when component is mounted
     onMounted(() => {
       loadMatches();
     });
 
     return {
+      loading,
       matches,
       upcomingMatches,
       pastMatches,
-      loading,
       loadMatches,
+      isPlayerConfirmed,
+      getConfirmationCount,
+      confirmParticipation,
+      unconfirmParticipation,
       updateMatchStatus,
       formatDate,
       formatTime,
@@ -406,27 +533,10 @@ export default {
 </script>
 
 <style scoped>
-:deep(.p-tabview .p-tabview-nav) {
-  border-bottom: 1px solid #e5e7eb;
+.match-card {
+  transition: all 0.2s ease;
 }
-
-:deep(.p-tabview .p-tabview-nav li .p-tabview-nav-link) {
-  color: #4b5563;
-  border-width: 0 0 2px 0;
-  border-color: transparent;
-}
-
-:deep(.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link) {
-  border-color: var(--tennis-green, #4caf50);
-  color: var(--tennis-green, #4caf50);
-}
-
 .match-card:hover {
-  border-color: #e5e7eb;
-}
-
-:deep(.p-button.p-button-sm) {
-  padding: 0.4rem 0.8rem;
-  font-size: 0.875rem;
+  transform: translateY(-2px);
 }
 </style>
