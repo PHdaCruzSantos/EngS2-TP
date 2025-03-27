@@ -115,7 +115,7 @@ const menuItems = [
   {
     label: "Meu Perfil",
     icon: "pi pi-user",
-    command: () => router.push("/profile"),
+    command: () => router.push("/user/info"),
   },
   {
     separator: true,

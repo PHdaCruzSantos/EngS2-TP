@@ -35,10 +35,13 @@ api.interceptors.response.use(
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // Assuming you store the token in localStorage
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // Add these headers for CORS
+    config.headers["Access-Control-Allow-Origin"] = "*";
+    config.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE";
     return config;
   },
   (error) => {

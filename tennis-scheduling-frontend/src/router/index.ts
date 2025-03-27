@@ -44,18 +44,18 @@ const router = createRouter({
       component: () => import("../views/matches/MatchSheduleView.vue"),
       meta: { requiresAuth: true },
     },
-    // {
-    //   path: "/profile",
-    //   name: "profile",
-    //   // component: () => import("@/views/profile/ProfileView.vue"),
-    //   meta: { requiresAuth: true },
-    // },
-    // {
-    //   path: "/notifications",
-    //   name: "notifications",
-    //   // component: () => import("@/views/notifications/NotificationsView.vue"),
-    //   meta: { requiresAuth: true },
-    // },
+    {
+      path: "/user/info",
+      name: "profile",
+      component: () => import("../views/user/UserInfoView.vue"),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/notifications",
+      name: "notifications",
+      component: () => import("../views/user/NotificationView.vue"),
+      meta: { requiresAuth: true },
+    },
   ],
 });
 

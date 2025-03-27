@@ -194,7 +194,9 @@ export default {
     async fetchMatchHistory() {
       try {
         this.loading = true;
-        const userId = this.currentUser?.id;
+        const userStore = useAuthStore();
+        const userId = userStore.user.user.id;
+        console.log("User ID:", userStore.user.user.id);
 
         if (!userId) {
           throw new Error("Usuário não autenticado");
