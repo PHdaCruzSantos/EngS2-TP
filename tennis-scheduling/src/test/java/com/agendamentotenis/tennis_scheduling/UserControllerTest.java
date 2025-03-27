@@ -2,6 +2,7 @@ package com.agendamentotenis.tennis_scheduling;
 
 import com.agendamentotenis.controller.UserController;
 import com.agendamentotenis.model.User;
+import com.agendamentotenis.security.JwtConfig;
 import com.agendamentotenis.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,10 +15,12 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +28,9 @@ public class UserControllerTest {
 
   @Mock
   private UserService userService;
+
+  @Mock
+  private JwtConfig jwtConfig;
 
   @InjectMocks
   private UserController userController;
@@ -34,19 +40,31 @@ public class UserControllerTest {
   @BeforeEach
   void setUp() {
     testUser = new User("Test User", "test@example.com", "password123");
+    // Removemos o stubbing do jwtConfig.generateToken daqui
   }
 
   @Test
   void registerUser_Success() {
     // Given
     when(userService.createUser(any(User.class))).thenReturn(testUser);
+    when(jwtConfig.generateToken(anyString())).thenReturn("dummy-token"); // Stubbing movido para cá
 
     // When
-    ResponseEntity<User> response = userController.registerUser(testUser);
+    ResponseEntity<?> response = userController.registerUser(testUser);
 
     // Then
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(testUser, response.getBody());
+
+    // Verifica se o corpo da resposta é um Map
+    assertTrue(response.getBody() instanceof Map);
+
+    // Converte o corpo da resposta para um Map
+    Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+
+    // Verifica se o Map contém o token e o usuário
+    assertEquals("dummy-token", responseBody.get("token")); // Verifica o token
+    assertEquals(testUser, responseBody.get("user")); // Verifica o usuário
+
     verify(userService).createUser(testUser);
   }
 

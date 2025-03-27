@@ -1,0 +1,13 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://#{environment.MONGODB_USERNAME}:#{environment.MONGODB_PASSWORD}@#{environment.MONGODB_CLUSTER}
+      database: #{environment.MONGODB_DATABASE}
+      authentication-database: admin
+      auto-index-creation: true
+  mvc:
+    static-path-pattern: /static/**
+
+jwt:
+  secret: #{environment.JWT_SECRET}
+  expiration: 86400000

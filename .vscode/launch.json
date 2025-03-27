@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-TennisSchedulingApplication<tennis-scheduling>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.agendamentotenis.tennis_scheduling.TennisSchedulingApplication",
+      "projectName": "tennis-scheduling",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
