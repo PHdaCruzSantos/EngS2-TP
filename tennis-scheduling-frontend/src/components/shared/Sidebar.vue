@@ -1,7 +1,7 @@
 <template>
   <aside
     v-show="sidebarVisible"
-    class="fixed top-[64px] left-0 h-[calc(100vh-64px)] w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-20"
+    class="fixed top-[64px] left-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-10"
     :class="{
       '-translate-x-full': !sidebarVisible,
       'translate-x-0': sidebarVisible,
@@ -10,7 +10,7 @@
     <div class="p-4 bg-tennis-green text-white">
       <h2 class="text-lg font-semibold">Menu</h2>
     </div>
-    <div class="p-4">
+    <div class="p-4 h-[calc(100vh-64px)] overflow-y-auto">
       <PanelMenu :model="menuItems" class="border-none" />
     </div>
   </aside>
@@ -65,7 +65,7 @@ const menuItems = [
       {
         label: "Partidas Agendadas",
         icon: "pi pi-list",
-        command: () => router.push("/matches"),
+        command: () => router.push("/matches/shedule"),
       },
       {
         label: "Histórico",

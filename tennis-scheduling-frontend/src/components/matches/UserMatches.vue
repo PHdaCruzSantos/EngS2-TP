@@ -42,7 +42,7 @@
               <div
                 v-for="match in upcomingMatches"
                 :key="match.id"
-                class="match-card border rounded-lg p-4 hover:shadow-md transition-shadow"
+                class="match-card border rounded-lg p-4 hover:shadow-md transition-shadow border-tennis-dark bg-lime-200"
               >
                 <div class="flex justify-between">
                   <div class="match-info">
@@ -143,14 +143,14 @@
                     "
                     icon="pi pi-times"
                     label="Cancelar Confirmação"
-                    class="p-button-warning p-button-sm"
+                    class="p-button-warning p-button-sm bg-yellow-500 px-1 text-gray-900 hover:bg-yellow-600 hover:text-white"
                     @click="unconfirmParticipation(match.id)"
                   />
                   <Button
                     v-if="['SCHEDULED', 'CONFIRMED'].includes(match.status)"
                     icon="pi pi-times"
                     label="Cancelar Partida"
-                    class="p-button-danger p-button-sm"
+                    class="p-button-danger p-button-sm bg-red-500 px-1 text-gray-900 hover:bg-red-600 hover:text-white"
                     @click="updateMatchStatus(match.id, 'CANCELLED')"
                   />
                   <Button
@@ -175,7 +175,7 @@
               <div
                 v-for="match in pastMatches"
                 :key="match.id"
-                class="match-card border rounded-lg p-4 bg-gray-50"
+                class="match-card border rounded-lg p-4 border-tennis-dark bg-lime-200"
               >
                 <div class="flex justify-between">
                   <div class="match-info">
