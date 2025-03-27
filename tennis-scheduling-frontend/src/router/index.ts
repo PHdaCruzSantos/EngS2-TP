@@ -32,6 +32,18 @@ const router = createRouter({
       component: () => import("../views/matches/NewMatchView.vue"),
       meta: { requiresAuth: true },
     },
+    {
+      path: "/matches/history",
+      name: "history-match",
+      component: () => import("../views/matches/MatchHistoryView.vue"),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/matches/shedule",
+      name: "shedule-match",
+      component: () => import("../views/matches/MatchSheduleView.vue"),
+      meta: { requiresAuth: true },
+    },
     // {
     //   path: "/profile",
     //   name: "profile",
