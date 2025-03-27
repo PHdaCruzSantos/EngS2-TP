@@ -84,7 +84,7 @@ const menuItems = [
   {
     label: "Perfil",
     icon: "pi pi-user",
-    command: () => router.push("/profile"),
+    command: () => router.push("/user/info"),
     class: route.path === "/profile" ? "bg-tennis-dark text-tennis-dark" : "",
   },
 ];

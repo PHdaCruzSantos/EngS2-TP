@@ -21,6 +21,8 @@ import SelectButton from "primevue/selectbutton";
 import TabPanel from "primevue/tabpanel";
 import TabView from "primevue/tabview";
 import ProgressSpinner from "primevue/progressspinner";
+import ConfirmDialog from "primevue/confirmdialog";
+import ConfirmationService from "primevue/confirmationservice";
 
 import "./assets/styles/main.css";
 import "primevue/resources/themes/lara-light-green/theme.css";
@@ -47,6 +49,8 @@ app.component("SelectButton", SelectButton);
 app.component("TabPanel", TabPanel);
 app.component("TabView", TabView);
 app.component("ProgressSpinner", ProgressSpinner);
+app.component("ConfirmDialog", ConfirmDialog);
+app.use(ConfirmationService);
 
 app.use(createPinia());
 app.use(router);

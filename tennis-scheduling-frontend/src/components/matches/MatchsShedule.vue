@@ -199,7 +199,7 @@ export default {
       try {
         this.loading = true;
         const store = useAuthStore();
-        const userId = store.user?.id;
+        const userId = store.user.user?.id;
 
         if (!userId) {
           throw new Error("Usuário não autenticado");
