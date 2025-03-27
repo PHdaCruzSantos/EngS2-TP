@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/matches")
-@CrossOrigin(origins = "http://localhost:5173")
+// @CrossOrigin(origins = "http://localhost:5173")
 public class MatchController {
 
   @Autowired
@@ -55,6 +55,22 @@ public class MatchController {
       @PathVariable String id,
       @RequestBody Match.MatchStatus status) {
     return ResponseEntity.ok(matchService.updateMatchStatus(id, status));
+  }
+
+  // Novo endpoint para confirmar participação de um jogador específico
+  @PutMapping("/{id}/confirm/{playerId}")
+  public ResponseEntity<Match> confirmPlayerParticipation(
+      @PathVariable String id,
+      @PathVariable String playerId) {
+    return ResponseEntity.ok(matchService.confirmPlayerParticipation(id, playerId));
+  }
+
+  // Novo endpoint para cancelar confirmação de um jogador específico
+  @PutMapping("/{id}/unconfirm/{playerId}")
+  public ResponseEntity<Match> unconfirmPlayerParticipation(
+      @PathVariable String id,
+      @PathVariable String playerId) {
+    return ResponseEntity.ok(matchService.unconfirmPlayerParticipation(id, playerId));
   }
 
   @DeleteMapping("/{id}")

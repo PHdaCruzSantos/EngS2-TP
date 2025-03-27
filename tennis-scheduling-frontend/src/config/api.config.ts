@@ -8,27 +8,40 @@ const api = axios.create({
   withCredentials: true, // Permite o envio de cookies (se necessário)
 });
 
-// Intercepta as requisições para adicionar o token de autenticação
-api.interceptors.request.use((config) => {
-  const user = localStorage.getItem("user");
-  if (user) {
-    const { token } = JSON.parse(user);
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  return config;
-});
-
-// Intercepta as respostas para tratar erros globais
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      // Token expirado ou inválido
-      localStorage.removeItem("user"); // Remove o usuário do localStorage
-      window.location.href = "/login"; // Redireciona para a página de login
+    if (error.response) {
+      switch (error.response.status) {
+        case 401: // Não autorizado
+          localStorage.removeItem("user"); // Remove o usuário do localStorage
+          localStorage.removeItem("token"); // Remove o usuário do localStorage
+          window.location.href = "/login"; // Redireciona para a página de login
+          break;
+        case 403: // Proibido
+          console.error("Acesso negado");
+          console.log(localStorage.getItem("user"));
+          break;
+        case 500:
+          console.error("Erro no servidor");
+          break;
+      }
+    } else {
+      console.error("Erro de rede ou servidor indisponível");
     }
+    return Promise.reject(error);
+  }
+);
+
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token"); // Assuming you store the token in localStorage
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
     return Promise.reject(error);
   }
 );

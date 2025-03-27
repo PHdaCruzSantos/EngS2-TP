@@ -7,3 +7,7 @@ spring:
       auto-index-creation: true
   mvc:
     static-path-pattern: /static/**
+
+jwt:
+  secret: #{environment.JWT_SECRET}
+  expiration: 86400000

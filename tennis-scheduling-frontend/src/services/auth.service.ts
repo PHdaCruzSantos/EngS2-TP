@@ -17,6 +17,7 @@ export const authService = {
       const response = await api.post("/api/auth/login", { email, password }); // Certifique-se de que a URL está correta
       if (response.data.token) {
         localStorage.setItem("user", JSON.stringify(response.data));
+        localStorage.setItem("token", response.data.token);
       }
       return response.data;
     } catch (error) {
@@ -39,6 +40,7 @@ export const authService = {
 
   logout(): void {
     localStorage.removeItem("user"); // Remove o usuário do localStorage
+    localStorage.removeItem("token"); // Remove o token do localStorage
   },
 
   getCurrentUser(): any {

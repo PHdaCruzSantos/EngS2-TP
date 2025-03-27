@@ -12,11 +12,19 @@ import Button from "primevue/button";
 import Sidebar from "primevue/sidebar";
 import PanelMenu from "primevue/panelmenu";
 import Dialog from "primevue/dialog";
+import Dropdown from "primevue/dropdown";
+import Calendar from "primevue/calendar";
+import Card from "primevue/card";
+import Toast from "primevue/toast";
+import ToastService from "primevue/toastservice";
+import SelectButton from "primevue/selectbutton";
+import TabPanel from "primevue/tabpanel";
+import TabView from "primevue/tabview";
+import ProgressSpinner from "primevue/progressspinner";
 
 import "./assets/styles/main.css";
 import "primevue/resources/themes/lara-light-green/theme.css";
 import "primeicons/primeicons.css";
-import ToastService from "primevue/toastservice";
 
 const app = createApp(App);
 
@@ -31,6 +39,14 @@ app.component("Button", Button);
 app.component("Sidebar", Sidebar);
 app.component("PanelMenu", PanelMenu);
 app.component("Dialog", Dialog);
+app.component("Dropdown", Dropdown);
+app.component("Calendar", Calendar);
+app.component("Card", Card);
+app.component("Toast", Toast);
+app.component("SelectButton", SelectButton);
+app.component("TabPanel", TabPanel);
+app.component("TabView", TabView);
+app.component("ProgressSpinner", ProgressSpinner);
 
 app.use(createPinia());
 app.use(router);
