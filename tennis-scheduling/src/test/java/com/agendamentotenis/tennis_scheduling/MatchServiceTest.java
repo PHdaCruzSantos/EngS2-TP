@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -140,12 +141,26 @@ public class MatchServiceTest {
     when(matchRepository.save(any(Match.class))).thenReturn(testMatch);
 
     // When
-    Match updatedMatch = matchService.updateMatchStatus("match1", Match.MatchStatus.CONFIRMED);
+    Match updatedMatch = matchService.updateMatchStatus("match1", Match.MatchStatus.CANCELLED);
 
     // Then
     assertNotNull(updatedMatch);
-    assertEquals(Match.MatchStatus.CONFIRMED, updatedMatch.getStatus());
+    assertEquals(Match.MatchStatus.CANCELLED, updatedMatch.getStatus());
     verify(matchRepository).save(any(Match.class));
+  }
+
+  @Test
+  void updateMatchStatus_ToConfirmed_ThrowsException() {
+    // Given
+    when(matchRepository.findById("match1")).thenReturn(Optional.of(testMatch));
+
+    // Then
+    RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+      matchService.updateMatchStatus("match1", Match.MatchStatus.CONFIRMED);
+    });
+
+    assertEquals("Status CONFIRMED deve ser atingido via confirmação de jogadores", exception.getMessage());
+    verify(matchRepository, never()).save(any(Match.class));
   }
 
   @Test
